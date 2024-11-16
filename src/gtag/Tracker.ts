@@ -189,16 +189,18 @@ export class Tracker {
   }
 
   public trackEvent(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     eventName: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     params?: Record<string, string | number | boolean>
   ) {
-    const now = Date.now();
+    /* const now = Date.now();
     const time = now - this.lastTime;
     this.lastTime = now;
 
     this.events.push([eventName, params, time]);
     this.processEvents();
-    this.processUserEngagement();
+    this.processUserEngagement(); */
   }
 
   public setUserProperty(key: string, value: any) {

@@ -22,7 +22,7 @@ import {
   SendMessageOptions,
   SendMessageReturn,
 } from '..';
-import { prepareLinkPreview, prepareMessageButtons, sendRawMessage } from '.';
+import { prepareMessageButtons, sendRawMessage } from '.';
 
 export type TextMessageOptions = SendMessageOptions &
   MessageButtonsOptions &
@@ -84,7 +84,7 @@ export async function sendTextMessage(
   };
 
   rawMessage = prepareMessageButtons(rawMessage, options);
-  rawMessage = await prepareLinkPreview(rawMessage, options);
+  /* rawMessage = await prepareLinkPreview(rawMessage, options); */
 
   return await sendRawMessage(chatId, rawMessage, options);
 }
