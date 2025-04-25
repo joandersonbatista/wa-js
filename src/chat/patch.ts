@@ -16,9 +16,10 @@
 
 import { WPPError } from '../util';
 import * as webpack from '../webpack';
-import { ChatModel, functions, WidFactory } from '../whatsapp';
+import { ChatModel, ContactStore, functions, WidFactory } from '../whatsapp';
 import { wrapModuleFunction } from '../whatsapp/exportModule';
 import {
+  checkChatExistedOrCreate,
   createChat,
   findOrCreateLatestChat,
   getChatRecordByAccountLid,
@@ -93,41 +94,57 @@ function applyPatch() {
    * Patch for fix error on try send message to lids
    */
   wrapModuleFunction(findOrCreateLatestChat, async (func, ...args) => {
-    const type = args[1];
     const chatId = args[0];
     let chatParams: any = { chatId: args[0] };
     const context = args[1];
     const options = (args as any)[2];
+    const existingChat = await getExisting(chatParams.chatId);
+    const { forceUsync, signal, nextPrivacyMode } = options ?? ({} as any);
 
-    if (chatId.isLid()) {
-      const lid = getEnforceCurrentLid(chatId);
-      chatParams = await selectChatForOneOnOneMessage({ lid });
+    //It's a patch for some contacts that are in ChatStore but don't actually exist on WhatsApp Web.
+    // So, I force the creation of the contact to prevent the error of infinitely sending messages without a response.
+    const contact = ContactStore.get(chatId);
+    if (contact && !existingChat) {
+      await createChat(
+        chatParams,
+        context,
+        {
+          createdLocally: true,
+          lidOriginType: 'general',
+        },
+        {
+          forceUsync,
+          nextPrivacyMode,
+        }
+      );
+      const existingChat = await getExisting(chatParams.chatId);
+      return { chat: existingChat as ChatModel, created: false };
     }
 
-    const { forceUsync, signal, nextPrivacyMode } = options ?? ({} as any);
+    if (!chatId.isLid()) return await func(...args);
+
+    const lid = getEnforceCurrentLid(chatId);
+    chatParams = await selectChatForOneOnOneMessage({ lid });
 
     if (signal?.aborted) {
       throw new WPPError('signal_abort_error', 'Signal aborted');
     }
 
-    const existingChat = await getExisting(chatParams.chatId);
     if (existingChat) {
-      if (type == 'forwardSelectedModals')
-        return { chat: existingChat, created: false };
-      else return existingChat;
+      return { chat: existingChat, created: false };
     }
 
-    const createChatParams: {
-      createdLocally: boolean;
-      notSpam?: boolean;
-      lidOriginType?: any;
-    } = {
-      createdLocally: true,
-      lidOriginType: 'general',
-    };
-    await createChat(chatParams, context, createChatParams, {
-      forceUsync,
-      nextPrivacyMode,
+    const isExist = await checkChatExistedOrCreate({
+      destinationChat: chatParams,
+      msgMeta: null,
+      chatOriginType: context,
+      initialProps: {
+        createdLocally: false,
+      },
+      options: {
+        forceUsync,
+        nextPrivacyMode,
+      },
     });
 
     const newChat = await getExisting(chatParams.chatId);
@@ -135,7 +152,10 @@ function applyPatch() {
       throw new Error('findChat: new chat not found');
     }
 
-    return newChat;
+    return {
+      chat: newChat,
+      created: !isExist,
+    };
   });
 
   wrapModuleFunction(selectChatForOneOnOneMessage, async (func, ...args) => {
