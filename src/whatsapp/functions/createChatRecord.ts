@@ -15,28 +15,38 @@
  */
 
 import { exportModule } from '../exportModule';
+import { Wid } from '../misc';
 
 /**
  * @whatsapp WAWebCreateChat >= 2.3000.0
  */
-export declare function checkChatExistedOrCreate(options: {
-  destinationChat: any;
-  msgMeta: null;
-  chatOriginType: any;
-  initialProps: any;
-  options: {
-    forceUsync: any;
-    nextPrivacyMode: any;
-  };
-}): Promise<any>;
+export declare function createChatRecord(
+  id: Wid,
+  chatRecord: {
+    id: string;
+    accountLid?: string;
+    bizBotSystemMsgType?: string;
+    createdLocally: boolean;
+    disappearingModeInitiatedByMe?: boolean;
+    disappearingModeInitiator?: string;
+    disappearingModeTrigger?: string;
+    ephemeralDuration?: number;
+    ephemeralSettingTimestamp?: number;
+    isAutoMuted: boolean;
+    lidOriginType?: string;
+    notSpam?: boolean;
+    t?: number;
+    tcToken: ArrayBuffer;
+    tcTokenSenderTimestamp?: number;
+    tcTokenTimestamp: number;
+    unreadCount: number;
+  }
+): Promise<undefined>;
 
 exportModule(
   exports,
   {
-    checkChatExistedOrCreate: [
-      'checkChatExistedOrCreate',
-      'checkChatExistsOrCreate',
-    ],
+    createChatRecord: 'createChatRecord',
   },
-  (m) => m.checkChatExistedOrCreate || m.checkChatExistsOrCreate
+  (m) => m.createChatRecord
 );

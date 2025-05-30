@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 WPPConnect Team
+ * Copyright 2024 WPPConnect Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-import * as webpack from '../../webpack';
-import { Wid } from '..';
 import { exportModule } from '../exportModule';
-import { fetchMexGroupInviteCode } from './';
+import { Wid } from '../misc';
 
-/** @whatsapp 65705 */
-export declare function sendQueryGroupInviteCode(groupId: Wid): Promise<string>;
+/**
+ * @whatsapp WAWebApiContact
+ */
+export declare function getPhoneNumber(wid: Wid): any;
 
 exportModule(
   exports,
   {
-    sendQueryGroupInviteCode: 'sendQueryGroupInviteCode',
+    getPhoneNumber: 'getPhoneNumber',
   },
-  (m) => m.sendQueryGroupInviteCode
+  (m) => m.getPhoneNumber
 );
-
-webpack.injectFallbackModule('sendQueryGroupInviteCode', {
-  sendQueryGroupInviteCode: async (groupId: Wid) => {
-    return await fetchMexGroupInviteCode(groupId);
-  },
-});

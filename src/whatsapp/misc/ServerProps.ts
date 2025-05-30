@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { injectFallbackModule } from '../../webpack';
 import { exportModule } from '../exportModule';
 import { ServerPropsModel } from '../models';
+import { ServerPropsConstants } from './ServerPropsConstants';
 
 /** @whatsapp 8080
  * @whatsapp 608080 >= 2.2222.8
@@ -31,3 +33,12 @@ exportModule(
     (m.getMaxFilesSizeServerProp && m.ServerProps) ||
     (m.getMaxFilesSize && m.ServerProps)
 );
+
+//This fallback is only in place to prevent errors on older versions of WhatsApp Web for now;
+// it will be removed soon, as all their attributes have either been removed or moved to different functions.
+injectFallbackModule('ServerProps', {
+  getMaxFilesSizeServerProp: () => {
+    return ServerPropsConstants.MAX_FILE_SIZE_BYTES;
+  },
+  ServerProps: {},
+});
