@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './abPropsCache';
 export * from './addAndSendMessageEdit';
 export * from './addAndSendMsgToChat';
 export * from './addProductToCart';
@@ -112,6 +113,9 @@ export * from './labelAddAction';
 export * from './markSeen';
 export * from './mediaTypeFromProtobuf';
 export * from './membershipApprovalRequestAction';
+export * from './mexFetchNewsletterDirectorySearchResults';
+export * from './mexJoinNewsletter';
+export * from './mexLeaveNewsletter';
 export * from './msgDataFromMsgModel';
 export * from './msgFindQuery';
 export * from './muteNewsletter';
@@ -128,6 +132,7 @@ export * from './queryOrder';
 export * from './randomHex';
 export * from './randomId';
 export * from './removeStatusMessage';
+export * from './reportSpam';
 export * from './resetGroupInviteCode';
 export * from './revokeStatus';
 export * from './saveContactAction';
@@ -159,6 +164,7 @@ export * from './STATUS_JID';
 export * from './statusEnable';
 export * from './subscribePresence';
 export * from './syncABPropsTask';
+export * from './toggleNewsletterAdminActivityMuteStateAction';
 export * from './toUserLid';
 export * from './typeAttributeFromProtobuf';
 export * from './unixTime';
